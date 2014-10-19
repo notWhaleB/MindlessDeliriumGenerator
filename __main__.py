@@ -110,24 +110,27 @@ def generate(dump_file, length, output_file):
 
     # Performance improve:
     # Pre-processing of first word in view of huge calculation repeating.
-    for j in range(randint(0, trie.max_deep - 1)):
-            for key in trie.root().seq:
-                for k in range(trie.root().seq[key].count):
-                    first_words.append(key)
+    for key in trie.root().seq:
+        for k in range(trie.root().seq[key].count):
+            first_words.append(key)
 
     print("Generating...")
     while len(result) <= length:
         cur_node = trie.root()
-        temp = []
 
         result.append(first_words[randint(0, len(first_words) - 1)])
+        cur_node = cur_node.seq[result[-1]]
 
         # On each turn deeper pass the tree and randomly choose new word.
         for j in range(randint(0, trie.max_deep - 1)):
+            temp = []
+
             for key in cur_node.seq:
                 for k in range(cur_node.seq[key].count):
                     temp.append(key)
+
             result.append(temp[randint(0, len(temp) - 1)])
+            cur_node = cur_node.seq[result[-1]]
 
     print("Writing...")
     with open(output_file, "w") as file:
