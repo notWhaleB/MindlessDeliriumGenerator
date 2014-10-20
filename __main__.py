@@ -115,14 +115,18 @@ def generate(dump_file, length, output_file):
             first_words.append(key)
 
     print("Generating...")
+    is_first_sentence_word = True
     while len(result) <= length:
         cur_node = trie.root()
 
         result.append(first_words[randint(0, len(first_words) - 1)])
         cur_node = cur_node.seq[result[-1]]
+        if is_first_sentence_word:
+                result[-1] = result[-1][0:1].upper() + result[-1][1:]
+                is_first_sentence_word = False
 
         # On each turn deeper pass the tree and randomly choose new word.
-        for j in range(randint(0, trie.max_deep - 1)):
+        for j in range(randint(1, trie.max_deep - 1)):
             temp = []
 
             for key in cur_node.seq:
@@ -132,9 +136,22 @@ def generate(dump_file, length, output_file):
             result.append(temp[randint(0, len(temp) - 1)])
             cur_node = cur_node.seq[result[-1]]
 
+        # Ends sentence with 1/5 probability.
+        if len(result[-1]) > 2 and randint(1, 5) == 3:
+            result[-1] += "."
+            is_first_sentence_word = True
+        elif len(result[-1]) > 3 and len(result) < length:
+
+            # With 1/2 or 1/6 puts ',' or '-' at end of string.
+            rand = randint(1, 6)
+            if rand < 4:
+                result[-1] += ","
+            elif rand == 6:
+                result[-1] += " —"
+
     print("Writing...")
     with open(output_file, "w") as file:
-        print(" ".join([word for word in result[:length]]), file=file)
+        print(" ".join([word for word in result[:length]]) + ".", file=file)
 
 
 argv = []
