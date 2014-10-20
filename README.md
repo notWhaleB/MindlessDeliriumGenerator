@@ -4,3 +4,4 @@ Usage:
 learn input_text N dump_file
 2. Generating text of length N by base from dump
 generate dump_file N output_file
+
